@@ -29,3 +29,27 @@ class RegistrationForm(Form):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('该用户已经被注册.')
 
+class ChangePasswordForm(Form):
+    old_password = StringField('Old password',validators=[Required()])
+    password = StringField('New password',validators=[
+        Required(),EqualTo('password2',message='两次密码必须一致.')])
+    password2 = PasswordField('Confirm Password',validators=[Required()])
+    submit = SubmitField('Update Password')
+
+
+class PasswordResetRequestForm(Form):
+    email = StringField('Email',validators=[Required(),Length(1,64),Email()])
+    submit= SubmitField('Reset Password.')
+
+class PasswordResetForm(Form):
+    email = StringField('Email', validators=[Required(), Length(1, 64),
+                                   Email()])
+    password = PasswordField('New Password', validators=[
+        Required(), EqualTo('password2', message='Passwords must match')])
+    password2 = PasswordField('Confirm password', validators=[Required()])
+    submit = SubmitField('Reset Password')
+
+    def validate_email(self,field):
+        if User.query.filter_by(email=field.data).first() is None:
+            raise ValidationError('Unknown email address.')
+
