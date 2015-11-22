@@ -17,7 +17,7 @@ class Config:
     configParser.read('config.ini')
     MAIL_USERNAME = configParser.get('mailInfo','user')
     MAIL_PASSWORD = configParser.get('mailInfo','password')
-    
+
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     FLASKY_MAIL_SENDER = 'Flasky Admin <%s>'%MAIL_USERNAME
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
