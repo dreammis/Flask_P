@@ -4,6 +4,9 @@ from . import login_manager
 from flask.ext.login import UserMixin,AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
+from datetime import datetime
+from flask import request
+import hashlib
 
 class Permission:
     FOLLOW=0x01
@@ -20,6 +23,7 @@ class Role(db.Model):
     #add 15 11.23
     default = db.Column(db.BOOLEAN,default=False,index=True)
     permissions = db.Column(db.Integer)
+
 
     @staticmethod
     def insert_roles():
@@ -66,6 +70,17 @@ class User(db.Model,UserMixin):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean,default=False)
+    #add 15 11 24
+    location = db.Column(db.String(64))
+    about_me = db.Column(db.Text())
+    #db.Column's default can accept function,so forget the ()
+    member_since = db.Column(db.DateTime(),default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
+    name = db.Column(db.String(64))
+
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
     @property
     def password(self):
