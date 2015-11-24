@@ -5,7 +5,6 @@ from flask.ext.login import UserMixin,AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from datetime import datetime
-from flask import request
 import hashlib
 
 class Permission:
@@ -61,6 +60,10 @@ class User(db.Model,UserMixin):
                 self.role=Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role=Role.query.filter_by(default=True).first()
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash=hashlib.md5(
+                self.email.encode('utf-8')).hexdigest()
+
 
 
     __tablename__ = 'users'
@@ -77,6 +80,9 @@ class User(db.Model,UserMixin):
     member_since = db.Column(db.DateTime(),default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
     name = db.Column(db.String(64))
+    avatar_hash = db.Column(db.String(32))
+    #for posts
+    posts = db.relationship('Post',backref='author',lazy='dynamic')
 
     def ping(self):
         self.last_seen = datetime.utcnow()
@@ -131,11 +137,65 @@ class User(db.Model,UserMixin):
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
 
+    #add by 2015/11/25
+    def change_email(self,token):
+        #change email module have not make it... and the generate the MD5's hexdigest() is to be conintune
+        pass
+
+    def gravatar(self,size=100,default='identicon',rating='g'):
+        url = 'https://secure.gravatar.com/avatar'
+        hash = self.avatar_hash or hashlib.md5(self.email.encode('utf-8')).hexdigest()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
+            url = url,hash=hash,size=size,default=default,rating=rating
+        )
+    @staticmethod
+    def generate_fake(count=200):
+        from sqlalchemy.exc import IntegrityError
+        from random import seed
+        import forgery_py
+        seed()
+        for i in range(count):
+            u = User(email=forgery_py.internet.email_address(),
+                     username = forgery_py.internet.user_name(),
+                     password = forgery_py.lorem_ipsum.word(),
+                     confirmed=True,
+                     name = forgery_py.name.full_name(),
+                     location = forgery_py.address.city(),
+                     about_me = forgery_py.lorem_ipsum.sentence(),
+                     member_since = forgery_py.date.date(True))
+            db.session.add(u)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
 class AnonymousUser(AnonymousUserMixin):
     def can(self,permissions):
         return False
     def is_administrator(self):
         return False
+
+class Post(db.Model):
+    __tablename__='posts'
+    id = db.Column(db.Integer,primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
+    author_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+
+    @staticmethod
+    def generate_fake(count=200):
+        from random import seed,randint
+        import forgery_py
+        seed()
+        user_count = User.query.count()
+        for i in range(count):
+            u = User.query.offset(randint(0,user_count-1)).first()
+            p = Post(body =forgery_py.lorem_ipsum.sentence(),
+                timestamp = forgery_py.date.date(True),author = u)
+            db.session.add(p)
+            db.session.commit()
+
+
+
 
 login_manager.anonymous_user = AnonymousUser
 
