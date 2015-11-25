@@ -12,6 +12,7 @@ You need to follow some steps below.
   python manger.py shell
   >db.create_all()
   >Role.insert_roles()
+  
   sometimes you need a migeration
   
   
