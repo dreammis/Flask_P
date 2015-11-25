@@ -10,8 +10,8 @@ You need to follow some steps below.
   password:yourpassword
 3.in the console type these:
   python manger.py shell
-  >>db.create_all()
-  >>Role.insert_roles()
+  >db.create_all()
+  >Role.insert_roles()
   sometimes you need a migeration
   
   
