@@ -48,3 +48,7 @@ class PostForm(Form):
 >**注意：**这个马克党和我原来用的不太一样，至少代码块我是没搞出来额。
                          ''')
     submit = SubmitField('Submit')
+
+class CommentForm(Form):
+    body = StringField('Enter your comment', validators=[Required()])
+    submit = SubmitField('Submit')
