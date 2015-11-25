@@ -43,5 +43,8 @@ class EditProfileAdminForm(Form):
             User.query.filter_by(username = field.data).first():
             raise ValidationError('Username already in use.')
 class PostForm(Form):
-    body = PageDownField('What\'s on your mind?',validators=[Required()])
+    body = PageDownField('What\'s on your mind?',validators=[Required()],
+                         default='''##你可以使用MarkDown ohh!!!
+>**注意：**这个马克党和我原来用的不太一样，至少代码块我是没搞出来额。
+                         ''')
     submit = SubmitField('Submit')
