@@ -12,7 +12,7 @@ bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
-cache  = Cache()
+cache  = Cache(config={'CACHE_TYPE':'simple'})
 pageDown = PageDown()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
