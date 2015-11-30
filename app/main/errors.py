@@ -11,7 +11,11 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 @main.app_errorhandler(403)
-def page_not_found(e):
+def forbidden(e):
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        response = jsonify({'error':'forbidden'})
+        response.status_code = 403
+        return response
     return render_template('403.html'), 403
 
 
