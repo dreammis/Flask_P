@@ -2,7 +2,7 @@
 import os
 from app import create_app, db
 from app.models import User, Role,Permission,Post,Follow,Comment
-from flask.ext.script import Manager, Shell
+from flask.ext.script import Manager, Shell,Server
 from flask.ext.migrate import Migrate, MigrateCommand
 import sys
 reload(sys)
@@ -25,6 +25,11 @@ def test():
     import unittest
     tests = unittest.TestLoader().discover('tests')
     unittest.TextTestRunner(verbosity=2).run(tests)
+
+
+#Just for the dotCloud
+# server = Server(host="0.0.0.0", port=int(os.environ['PORT']))
+# manager.add_command("runserver", server)
 
 
 if __name__ == '__main__':
