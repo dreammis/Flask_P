@@ -21,3 +21,9 @@ You need to follow some steps below.
   sometimes you need a migeration
   
   
+2015/12/2
+Create app in dotCloud.
+https://dreammis.dotcloudapp.com/
+
+The dotcloud project is dotCloud https://github.com/dreammis/dotCloudApp
+  
